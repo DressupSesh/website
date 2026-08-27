@@ -53,11 +53,17 @@
 
   async function track(eventType, campaignId = null, itemId = null) {
     try {
-      await client.from('boutique_events').insert({
-        campaign_id: campaignId,
-        item_id: itemId,
-        event_type: eventType,
-        metadata: { source: 'shop', path: location.pathname + location.search }
+      await fetch(`${cfg.supabaseUrl}/functions/v1/record-boutique-event`, {
+        method: 'POST',
+        headers: { apikey: cfg.supabasePublishableKey, 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          campaign_id: campaignId,
+          item_id: itemId,
+          event_type: eventType,
+          source: 'shop',
+          path: location.pathname + location.search
+        })
       });
     } catch (_) {}
   }
